@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Mastermind</title>
+  </head>
+  <body>
+    <h1>Mastermind</h1>
+    <p>Guess the code!</p>
+    <form method="POST">
+      {% for i in range(4) %}
+      <select name="guess[]" required>
+        {% for color in colors %}
+        <option value="{{ color }}">{{ color }}</option>
+        {% endfor %}
+      </select>
+      {% endfor %}
+      <button type="submit">Guess</button>
+    </form>
+    <h2>History</h2>
+    {% if history %}
+    <ul>
+      {% for guess, result in history %}
+      <li>
+        {{ guess|join(', ') }} - {{ result[0] }} correct positions, {{ result[1] }} correct colors
+      </li>
+      {% endfor %}
+    </ul>
+    {% endif %}
+    <p>Attempts remaining: {{ max_attempts - history|length }}</p>
+  </body>
+</html>
