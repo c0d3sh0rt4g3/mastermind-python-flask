@@ -18,13 +18,9 @@
     </form>
     <h2>History</h2>
     {% if history %}
-    <ul>
       {% for guess, result in history %}
-      <li>
-        {{ guess|join(', ') }} - {{ result[0] }} correct positions, {{ result[1] }} correct colors
-      </li>
+        {{ guess|join(', ') }} - {{ result[0] }} correct positions, {{ result[1] }} correct colors<br>
       {% endfor %}
-    </ul>
     {% endif %}
     <p>Attempts remaining: {{ max_attempts - history|length }}</p>
   </body>

@@ -5,18 +5,17 @@ app = Flask(__name__)
 app.secret_key = 'mysecretkey'
 
 # Define the number of digits in the code
-CODE_LENGTH = 4
+code_length = 4
 
 # Define the maximum number of attempts
-MAX_ATTEMPTS = 10
+max_attempts = 10
 
 # Define the colors available for the code and the guesses
-COLORS = ['red', 'green', 'blue', 'yellow', 'orange', 'purple']
-
+colors = ['red', 'green', 'blue', 'yellow', 'orange', 'purple']
 
 def generate_code():
-    """Generate a random code."""
-    return [random.choice(COLORS) for _ in range(CODE_LENGTH)]
+    #Generate a random code.
+    return [random.choice(colors) for _ in range(code_length)]
 
 
 def check_guess(code, guess):
@@ -24,24 +23,22 @@ def check_guess(code, guess):
     and the number of correct colors but incorrect positions."""
     correct_positions = 0
     correct_colors = 0
-    code_copy = code.copy()
-    guess_copy = guess.copy()
-    for i in range(CODE_LENGTH):
-        if guess_copy[i] == code_copy[i]:
+    code = code.copy()
+    guess = guess.copy()
+    for i in range(code_length):
+        if guess[i] == code[i]:
             correct_positions += 1
-            code_copy[i] = None
-            guess_copy[i] = None
-    for i in range(CODE_LENGTH):
-        if guess_copy[i] is not None and guess_copy[i] in code_copy:
+    for i in range(code_length):
+        if guess[i] is not None and guess[i] in code:
             correct_colors += 1
-            code_copy[code_copy.index(guess_copy[i])] = None
-            guess_copy[i] = None
+            code[code.index(guess[i])] = None
+            guess[i] = None
     return correct_positions, correct_colors
 
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    """Display the game board and handle the user's guesses."""
+    #Display the game board and handle the user's guesses.
     if 'code' not in session:
         session['code'] = generate_code()
         session['attempts'] = 0
@@ -52,22 +49,19 @@ def index():
             session['attempts'] += 1
             guess_result = check_guess(session['code'], guess)
             session['history'].append((guess, guess_result))
-            if guess_result[0] == CODE_LENGTH:
-                # Código adivinado correctamente
-                # Generar un nuevo código secreto y reiniciar las variables de sesión
-                session['code'] = generate_code()
-                session['attempts'] = 0
-                session['history'] = []
+            if guess_result[0] == code_length:
+                new_game()
                 return render_template('win.html', attempts=session['attempts'])
-            elif session['attempts'] >= MAX_ATTEMPTS:
-                
-                # Se acabaron los intentos
-                # Generar un nuevo código secreto y reiniciar las variables de sesión
-                session['code'] = generate_code()
-                session['attempts'] = 0
-                session['history'] = []
+            elif session['attempts'] >= max_attempts:
+                new_game()
                 return render_template('lose.html')
-    return render_template('game.html', colors=COLORS, history=session['history'], max_attempts=MAX_ATTEMPTS)
+    return render_template('game.html', colors=colors, history=session['history'], max_attempts=max_attempts)
+
+def new_game():
+    # Generate new secret and rest session variables
+    session['code'] = generate_code()
+    session['attempts'] = 0
+    session['history'] = []
 
 
 if __name__ == '__main__':
