@@ -9,8 +9,8 @@
     <form method="POST">
       {% for i in range(4) %}
       <select name="guess[]" required>
-        {% for color in colors %}
-        <option value="{{ color }}">{{ color }}</option>
+        {% for texto, color in colors.items() %}
+        <option value="{{ color }}">{{ texto }}</option>
         {% endfor %}
       </select>
       {% endfor %}
